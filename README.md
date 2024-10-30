@@ -24,7 +24,7 @@ var joints : Array
 func _ready() -> void:
 	var distance = (end_point.global_position - start_point.global_position).length()
 	var direction = (end_point.global_position - start_point.global_position).normalized()
-	# start a start point
+	# start at start point
 	joints.append(start_point)
 	# create joints
 	for j in (number_of_segments - 1):
