@@ -1,0 +1,178 @@
+[gd_scene load_steps=11 format=3 uid="uid://dn2swwkblagis"]
+
+[ext_resource type="Material" uid="uid://cj7poskscx4wr" path="res://materials/medium_metallic.tres" id="2_c6s4n"]
+[ext_resource type="Material" uid="uid://1nbtlextq1fp" path="res://materials/interactive_unlit_material.tres" id="2_ffeg3"]
+
+[sub_resource type="GDScript" id="GDScript_0vctq"]
+script/source = "extends Node3D
+@onready var startpoint := $StartPoint
+@onready var joint1 := $Joint1
+@onready var joint2 := $Joint2
+@onready var joint3 := $Joint3
+@onready var endpoint := $EndPoint
+@onready var segment1 := $Segment1
+@onready var segment2 := $Segment2
+@onready var segment3 := $Segment3
+@onready var segment4 := $Segment4
+@export var key_ID = 1
+@export var cable_color : Color
+@export var cable_gravity_amp = 1.0
+@export var cable_springiness = 2.0
+@export var cable_max_stretch = 2.5
+#get player
+@onready var player = get_tree().get_first_node_in_group(\"Player\")
+
+func _ready() -> void:
+	segment1.material_override.albedo_color = cable_color
+	segment2.material_override.albedo_color = cable_color
+	segment3.material_override.albedo_color = cable_color
+	segment4.material_override.albedo_color = cable_color
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta: float) -> void:
+	#joint 1
+	segment1.position = joint1.position/2
+	segment1.look_at(joint1.global_position)
+	segment1.rotation_degrees += Vector3(-90, 0, 180)
+	segment1.mesh.section_length = joint1.position.length()/2
+	# joint 2
+	segment2.position = joint1.position + (joint2.position - joint1.position)/2
+	segment2.look_at(joint2.global_position)
+	segment2.rotation_degrees += Vector3(-90, 0, 180)
+	segment2.mesh.section_length = (joint2.position - joint1.position).length()/2
+	# joint 3
+	segment3.position = joint2.position + (joint3.position - joint2.position)/2
+	segment3.look_at(joint3.global_position)
+	segment3.rotation_degrees += Vector3(-90, 0, 180)
+	segment3.mesh.section_length = (joint3.position - joint2.position).length()/2
+	# rigidbody
+	segment4.position = joint3.position + (endpoint.position - joint3.position)/2
+	segment4.look_at(endpoint.global_position)
+	segment4.rotation_degrees += Vector3(-90, 0, 180)
+	segment4.mesh.section_length = (endpoint.position - joint3.position).length()/2
+
+func _physics_process(delta: float) -> void:
+	# collide with floor
+	if $Joint1/RayCast3D.is_colliding() == false:
+		joint1.global_position.y = lerp(joint1.global_position.y, joint1.global_position.y - 1, cable_gravity_amp * delta/2)
+	if $Joint2/RayCast3D2.is_colliding() == false:
+		joint2.global_position.y = lerp(joint2.global_position.y, joint2.global_position.y - 1, cable_gravity_amp * delta/2)
+	if $Joint3/RayCast3D3.is_colliding() == false:
+		joint3.global_position.y = lerp(joint3.global_position.y, joint3.global_position.y - 1, cable_gravity_amp * delta/2)
+	
+	joint1.position = lerp(joint1.position, joint2.position/2, cable_springiness * delta)
+	joint2.position = lerp(joint2.position, joint1.position + (joint3.position - joint1.position)/2, cable_springiness * delta)
+	joint3.position = lerp(joint3.position, joint2.position + (endpoint.position - joint2.position)/2, cable_springiness * delta)
+	if (endpoint.global_position - joint3.global_position).length() >= cable_max_stretch:
+		endpoint.linear_velocity -= (endpoint.global_position - joint3.global_position)*0.1
+		if player.held_object == endpoint:
+			player._drop_or_throw_item(false)
+"
+
+[sub_resource type="SphereMesh" id="SphereMesh_hsdvb"]
+material = ExtResource("2_ffeg3")
+radius = 0.1
+height = 0.2
+radial_segments = 8
+rings = 2
+
+[sub_resource type="TubeTrailMesh" id="TubeTrailMesh_4uv8a"]
+resource_local_to_scene = true
+radius = 0.05
+radial_steps = 4
+sections = 2
+section_length = 0.5
+
+[sub_resource type="TubeTrailMesh" id="TubeTrailMesh_j4adu"]
+resource_local_to_scene = true
+radius = 0.05
+radial_steps = 4
+sections = 2
+section_length = 0.5
+
+[sub_resource type="TubeTrailMesh" id="TubeTrailMesh_yigdg"]
+resource_local_to_scene = true
+radius = 0.05
+radial_steps = 4
+sections = 2
+section_length = 0.5
+
+[sub_resource type="TubeTrailMesh" id="TubeTrailMesh_khcb3"]
+resource_local_to_scene = true
+radius = 0.05
+radial_steps = 4
+sections = 2
+section_length = 0.5
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_x81kp"]
+friction = 0.2
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_sfbv0"]
+radius = 0.25
+
+[node name="FlexibleCable" type="Node3D"]
+script = SubResource("GDScript_0vctq")
+
+[node name="StartPoint" type="Node3D" parent="."]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="StartPoint"]
+mesh = SubResource("SphereMesh_hsdvb")
+skeleton = NodePath("../../EndPoint")
+
+[node name="Segment1" type="MeshInstance3D" parent="."]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0.5, -6.55671e-08, 0)
+material_override = ExtResource("2_c6s4n")
+mesh = SubResource("TubeTrailMesh_4uv8a")
+
+[node name="Segment2" type="MeshInstance3D" parent="."]
+transform = Transform3D(-4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0, 1, 1.5, 0, 0)
+material_override = ExtResource("2_c6s4n")
+mesh = SubResource("TubeTrailMesh_j4adu")
+
+[node name="Segment3" type="MeshInstance3D" parent="."]
+transform = Transform3D(-4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0, 1, 2.5, 0, 0)
+material_override = ExtResource("2_c6s4n")
+mesh = SubResource("TubeTrailMesh_yigdg")
+
+[node name="Segment4" type="MeshInstance3D" parent="."]
+transform = Transform3D(-4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0, 1, 3.5, 0, 0)
+material_override = ExtResource("2_c6s4n")
+mesh = SubResource("TubeTrailMesh_khcb3")
+
+[node name="Joint1" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0)
+
+[node name="RayCast3D" type="RayCast3D" parent="Joint1"]
+target_position = Vector3(0, -0.05, 0)
+collision_mask = 5
+
+[node name="Joint2" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 0)
+
+[node name="RayCast3D2" type="RayCast3D" parent="Joint2"]
+target_position = Vector3(0, -0.05, 0)
+collision_mask = 5
+
+[node name="Joint3" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, 0)
+
+[node name="RayCast3D3" type="RayCast3D" parent="Joint3"]
+target_position = Vector3(0, -0.05, 0)
+collision_mask = 5
+
+[node name="EndPoint" type="RigidBody3D" parent="." groups=["Cable", "Grabbable"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 0)
+collision_layer = 12
+collision_mask = 13
+axis_lock_angular_x = true
+axis_lock_angular_y = true
+axis_lock_angular_z = true
+physics_material_override = SubResource("PhysicsMaterial_x81kp")
+lock_rotation = true
+max_contacts_reported = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="EndPoint"]
+shape = SubResource("SphereShape3D_sfbv0")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="EndPoint"]
+mesh = SubResource("SphereMesh_hsdvb")

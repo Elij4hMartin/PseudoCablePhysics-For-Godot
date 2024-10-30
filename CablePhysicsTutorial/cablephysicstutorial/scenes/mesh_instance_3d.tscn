@@ -1,0 +1,15 @@
+[gd_scene load_steps=2 format=3 uid="uid://7fbmk1lqs0gp"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_d0k1p"]
+resource_local_to_scene = true
+top_radius = 0.05
+bottom_radius = 0.05
+height = 1.0
+radial_segments = 8
+rings = 1
+
+[node name="Segment" type="Node3D"]
+
+[node name="Mesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0)
+mesh = SubResource("CylinderMesh_d0k1p")

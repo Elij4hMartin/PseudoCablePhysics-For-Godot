@@ -1,0 +1,67 @@
+[gd_scene load_steps=6 format=3 uid="uid://dtci3471vxmbj"]
+
+[ext_resource type="Script" path="res://scripts/psuedo_physics_cable.gd" id="1_5v5ad"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_amoaq"]
+friction = 0.1
+rough = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cgrjr"]
+resource_local_to_scene = true
+albedo_color = Color(0, 0.356847, 1, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_8x00w"]
+resource_local_to_scene = true
+material = SubResource("StandardMaterial3D_cgrjr")
+radius = 0.1
+height = 0.2
+radial_segments = 6
+rings = 2
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_tlldu"]
+radius = 0.1
+
+[node name="PsuedoPhysicsCable" type="Node3D" node_paths=PackedStringArray("start_point", "end_point")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, 0)
+script = ExtResource("1_5v5ad")
+start_point = NodePath("Start")
+start_is_rigidbody = true
+end_point = NodePath("End")
+number_of_segments = 5
+cable_length = 0.5
+cable_gravity_amp = 0.2
+cable_springiness = 20.0
+
+[node name="End" type="RigidBody3D" parent="." groups=["Grabbable"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, 0)
+collision_layer = 4
+collision_mask = 5
+axis_lock_angular_x = true
+axis_lock_angular_y = true
+axis_lock_angular_z = true
+physics_material_override = SubResource("PhysicsMaterial_amoaq")
+lock_rotation = true
+linear_damp = 1.0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="End"]
+mesh = SubResource("SphereMesh_8x00w")
+skeleton = NodePath("")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="End"]
+shape = SubResource("SphereShape3D_tlldu")
+
+[node name="Start" type="RigidBody3D" parent="." groups=["Grabbable"]]
+collision_layer = 4
+collision_mask = 5
+axis_lock_angular_x = true
+axis_lock_angular_y = true
+axis_lock_angular_z = true
+physics_material_override = SubResource("PhysicsMaterial_amoaq")
+linear_damp = 1.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Start"]
+shape = SubResource("SphereShape3D_tlldu")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="Start"]
+mesh = SubResource("SphereMesh_8x00w")
+skeleton = NodePath("")

@@ -1,0 +1,172 @@
+[gd_scene load_steps=13 format=3 uid="uid://ddqo17pfv6xjt"]
+
+[ext_resource type="Texture2D" uid="uid://dbl4a0tvdw7pl" path="res://textures/placeholders/DarkPrototypeTexture.png" id="1_edrna"]
+[ext_resource type="PackedScene" uid="uid://cssglj6choju3" path="res://scenes/player.tscn" id="2_n8x4n"]
+[ext_resource type="PackedScene" uid="uid://dpnia7pnlgqet" path="res://scenes/psuedo_physics_cable.tscn" id="2_nc41p"]
+[ext_resource type="PackedScene" uid="uid://mdsdgeynk147" path="res://scenes/cable_terminal.tscn" id="3_p56pu"]
+[ext_resource type="PackedScene" uid="uid://dtci3471vxmbj" path="res://scenes/psuedo_physics_cable_double.tscn" id="5_1lv8e"]
+[ext_resource type="Script" path="res://scripts/psuedo_physics_cable.gd" id="6_7t30t"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_yg1ph"]
+sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+ground_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+
+[sub_resource type="Sky" id="Sky_q2qms"]
+sky_material = SubResource("ProceduralSkyMaterial_yg1ph")
+
+[sub_resource type="Environment" id="Environment_anmqf"]
+background_mode = 2
+sky = SubResource("Sky_q2qms")
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jhjag"]
+albedo_texture = ExtResource("1_edrna")
+uv1_triplanar = true
+
+[sub_resource type="SphereMesh" id="SphereMesh_kwb86"]
+radius = 0.1
+height = 0.2
+radial_segments = 6
+rings = 5
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_7kvo4"]
+radius = 0.1
+
+[node name="Main" type="Node3D"]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.866023, -0.433016, 0.250001, 0, 0.499998, 0.866027, -0.500003, 0.749999, -0.43301, 0, 0, 0)
+shadow_enabled = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_anmqf")
+
+[node name="Ground" type="CSGBox3D" parent="."]
+use_collision = true
+size = Vector3(100, 1, 100)
+material = SubResource("StandardMaterial3D_jhjag")
+
+[node name="Player" parent="." instance=ExtResource("2_n8x4n")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3, 0)
+
+[node name="DraggableCable" parent="." instance=ExtResource("5_1lv8e")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 1, -18)
+cable_length = 5.0
+cable_gravity_amp = 1.0
+
+[node name="StationaryCable" parent="." node_paths=PackedStringArray("start_point", "end_point") instance=ExtResource("2_nc41p")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+start_point = NodePath("Pillar/Pillar3")
+end_point = NodePath("Pillar/Pillar2/Pillar4")
+end_is_rigidbody = false
+cable_length = 8.0
+cable_gravity_amp = 3.0
+
+[node name="Pillar" type="CSGBox3D" parent="StationaryCable"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 2, -27)
+use_collision = true
+size = Vector3(2, 3, 2)
+material = SubResource("StandardMaterial3D_jhjag")
+
+[node name="Pillar3" type="CSGBox3D" parent="StationaryCable/Pillar"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0.5, 0)
+use_collision = true
+size = Vector3(0.2, 1, 1)
+material = SubResource("StandardMaterial3D_jhjag")
+
+[node name="Pillar2" type="CSGBox3D" parent="StationaryCable/Pillar"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, 0)
+use_collision = true
+size = Vector3(2, 3, 2)
+material = SubResource("StandardMaterial3D_jhjag")
+
+[node name="Pillar4" type="CSGBox3D" parent="StationaryCable/Pillar/Pillar2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.95, 0.5, 0)
+use_collision = true
+size = Vector3(0.3, 1, 1)
+material = SubResource("StandardMaterial3D_jhjag")
+
+[node name="HangingCable" parent="." node_paths=PackedStringArray("start_point", "end_point") groups=["Grabbable"] instance=ExtResource("2_nc41p")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+start_point = NodePath("HangingCable/Pillar3")
+end_point = NodePath("HangingCable/RigidBody3D")
+cable_length = 8.0
+cable_gravity_amp = 1.0
+cable_springiness = 40.0
+
+[node name="HangingCable" type="CSGBox3D" parent="HangingCable"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 12, -17)
+use_collision = true
+size = Vector3(2, 3, 2)
+material = SubResource("StandardMaterial3D_jhjag")
+
+[node name="Pillar3" type="CSGBox3D" parent="HangingCable/HangingCable"]
+transform = Transform3D(-4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0, 1, 0, -1.5, 0)
+use_collision = true
+size = Vector3(0.2, 1, 1)
+material = SubResource("StandardMaterial3D_jhjag")
+
+[node name="RigidBody3D" type="RigidBody3D" parent="HangingCable/HangingCable" groups=["Grabbable"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -5, 0)
+collision_layer = 4
+axis_lock_angular_x = true
+axis_lock_angular_y = true
+axis_lock_angular_z = true
+linear_damp = 1.0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="HangingCable/HangingCable/RigidBody3D"]
+mesh = SubResource("SphereMesh_kwb86")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="HangingCable/HangingCable/RigidBody3D"]
+shape = SubResource("SphereShape3D_7kvo4")
+
+[node name="Pillar" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 2, -8)
+use_collision = true
+size = Vector3(2, 3, 2)
+material = SubResource("StandardMaterial3D_jhjag")
+
+[node name="Pillar3" type="CSGBox3D" parent="Pillar"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0.5, 0)
+use_collision = true
+size = Vector3(0.2, 1, 1)
+material = SubResource("StandardMaterial3D_jhjag")
+
+[node name="Pillar2" type="CSGBox3D" parent="Pillar"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, 0)
+use_collision = true
+size = Vector3(2, 3, 2)
+material = SubResource("StandardMaterial3D_jhjag")
+
+[node name="Pillar4" type="CSGBox3D" parent="Pillar/Pillar2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.95, -0.5, 0)
+use_collision = true
+size = Vector3(0.3, 1, 1)
+material = SubResource("StandardMaterial3D_jhjag")
+
+[node name="CableTerminal" parent="Pillar/Pillar2/Pillar4" instance=ExtResource("3_p56pu")]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, -0.2, 0, 0)
+
+[node name="RigidBody3D" type="RigidBody3D" parent="." groups=["Cable", "Grabbable"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.7, 2.4, -8)
+collision_layer = 12
+collision_mask = 13
+axis_lock_angular_x = true
+axis_lock_angular_y = true
+axis_lock_angular_z = true
+linear_damp = 1.0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="RigidBody3D"]
+mesh = SubResource("SphereMesh_kwb86")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="RigidBody3D"]
+shape = SubResource("SphereShape3D_7kvo4")
+
+[node name="PluggableCable" type="Node3D" parent="." node_paths=PackedStringArray("start_point", "end_point")]
+script = ExtResource("6_7t30t")
+start_point = NodePath("../Pillar/Pillar3")
+end_point = NodePath("../RigidBody3D")
+number_of_segments = 7
+cable_length = 10.0
+cable_gravity_amp = 1.0

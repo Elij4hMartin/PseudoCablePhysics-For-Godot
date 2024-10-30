@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://dpnia7pnlgqet"]
+
+[ext_resource type="Script" path="res://scripts/psuedo_physics_cable.gd" id="1_rrucy"]
+
+[node name="PsuedoPhysicsCable" type="Node3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, 0)
+script = ExtResource("1_rrucy")

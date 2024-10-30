@@ -1,0 +1,31 @@
+[gd_scene load_steps=5 format=3 uid="uid://mdsdgeynk147"]
+
+[ext_resource type="Script" path="res://scripts/cable_terminal.gd" id="1_tino8"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_chw1h"]
+albedo_color = Color(0.485703, 0.485704, 0.485703, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_pfedf"]
+material = SubResource("StandardMaterial3D_chw1h")
+size = Vector3(0.2, 0.1, 0.2)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_c1yd2"]
+radius = 0.1
+
+[node name="CableTerminal" type="Area3D"]
+collision_layer = 12
+collision_mask = 12
+script = ExtResource("1_tino8")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_pfedf")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.049669, 0)
+shape = SubResource("SphereShape3D_c1yd2")
+
+[node name="Node3D" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
+[connection signal="body_exited" from="." to="." method="_on_body_exited"]

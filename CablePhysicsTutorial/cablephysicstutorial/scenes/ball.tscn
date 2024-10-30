@@ -1,0 +1,37 @@
+[gd_scene load_steps=5 format=3 uid="uid://bq8djblr754dd"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_amoaq"]
+friction = 0.5
+rough = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cgrjr"]
+resource_local_to_scene = true
+albedo_color = Color(0, 0.356847, 1, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_8x00w"]
+resource_local_to_scene = true
+material = SubResource("StandardMaterial3D_cgrjr")
+radius = 0.1
+height = 0.2
+radial_segments = 6
+rings = 4
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_tlldu"]
+radius = 0.1
+
+[node name="Ball" type="RigidBody3D" groups=["Cable", "Grabbable"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.1, 0, 0)
+collision_layer = 4
+axis_lock_angular_x = true
+axis_lock_angular_y = true
+axis_lock_angular_z = true
+physics_material_override = SubResource("PhysicsMaterial_amoaq")
+lock_rotation = true
+linear_damp = 1.0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("SphereMesh_8x00w")
+skeleton = NodePath("")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_tlldu")
