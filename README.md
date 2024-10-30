@@ -6,7 +6,7 @@ Video: https://youtu.be/K8SLWUsPFNY
 ## Script usage instructions:
 - Attach the pseudo_physics_cable.gd script to a Node3D
 - Make sure you have the mesh_instance_3d.tscn scene in a "scenes" folder or change the script path to the file for the cable_mesh variable
-- Add a start point either a static node or a rigidbody
+- Add a start point as either a static node or a rigidbody
 - Add a end point that is either a static node or a rigidbody
 - If an end/start point is a rigidbody enable the exported variable for each end
 - Lastly adjust the values of the cable length, gravity and springiness to your desired values
