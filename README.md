@@ -2,6 +2,7 @@
 This is a simple approximation of rope/cable physics for Godot 4.3 that I made for a Screamjam submission, because I couldn't find a Verlet simulation that worked with the version of Godot I was using.
 Download this project and open it in Godot 4.3 to test out the project!
 ### CC0 Assets used: Kenney UI Pack, Kenney Prototype Textures
+### Video DEMO
 [![VIDEO DEMO](https://img.youtube.com/vi/K8SLWUsPFNY/0.jpg)](https://www.youtube.com/watch?v=K8SLWUsPFNY)
 ## Script usage instructions:
 - Attach the pseudo_physics_cable.gd script to a Node3D
