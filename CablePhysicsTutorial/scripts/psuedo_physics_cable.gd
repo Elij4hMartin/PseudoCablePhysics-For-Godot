@@ -24,7 +24,7 @@ func _ready() -> void:
 	# start at start point
 	joints.append(start_point)
 	# create joints
-	for j: int in (number_of_segments - 1):
+	for j in range(number_of_segments - 1):
 		joints.append(Node3D.new())
 		self.add_child(joints[j+1])
 		# position nodes evenly between the two points
@@ -32,7 +32,7 @@ func _ready() -> void:
 	# end at end point
 	joints.append(end_point)
 	# create cable segments
-	for s: int in number_of_segments:
+	for s in range(number_of_segments):
 		segments.append(cable_mesh.instantiate())
 		self.add_child(segments[s])
 		# position segments between the joints
@@ -42,7 +42,7 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	# Make segments point at their target and stretch/squash to their desired length
-	for i: int in number_of_segments:
+	for i in range(number_of_segments):
 		# set position between joints
 		segments[i].global_position = joints[i].global_position + (joints[i+1].global_position - joints[i].global_position)/2
 		# look at next joint
@@ -52,7 +52,7 @@ func _process(_delta: float) -> void:
 
 func _physics_process(delta: float) -> void:
 	# fake physics
-	for i: int in number_of_segments:
+	for i in range(number_of_segments):
 		if i != 0:
 			# collision
 			var query: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(joints[i].global_position, joints[i].global_position - Vector3(0,cable_thickness, 0))
@@ -91,7 +91,7 @@ func safe_look_at(node: Node3D, target: Vector3) -> void:
 
 	# Find an up vector that we can rotate around
 	var up: Vector3 = Vector3.ZERO
-	for entry: Vector3 in [Vector3.UP, Vector3.RIGHT, Vector3.BACK]:
+	for entry in [Vector3.UP, Vector3.RIGHT, Vector3.BACK]:
 		var v_x: Vector3 = entry.cross(v_z).normalized()
 		if v_x.length() != 0:
 			up = entry
